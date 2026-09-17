@@ -33,3 +33,16 @@ By default it connects to `127.0.0.1:9090`, i.e. the `external-controller` in yo
 | --- | --- | --- |
 | `CLASH_CONTROLLER` | `127.0.0.1:9090` | Controller address; a full `http://host:port` also works |
 | `CLASH_SECRET` | empty | Matches `secret` in the config; when set, `Authorization: Bearer` is sent |
+
+### Autostart
+
+`clash-tray.desktop` is an XDG autostart entry. To have the tray come up with your session,
+install the binary in your `$PATH` and copy the entry into place:
+
+```sh
+install -Dm644 clash-tray.desktop ~/.config/autostart/clash-tray.desktop
+```
+
+A packager can install the same file into `/etc/xdg/autostart/` for every user of the
+machine. A copy in `~/.config/autostart/` under the same name takes precedence over it, so
+users can still opt out or change how the tray is launched.

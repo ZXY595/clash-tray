@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=clash-tray
+Comment=Control the mihomo kernel from the system tray
+Exec=clash-tray
+Icon=network-vpn
+Terminal=false
+Categories=Network;
+Keywords=clash;mihomo;proxy;tray;
+StartupNotify=false
+# An autostart entry: the session spawns us, either directly or, on sessions
+# managed by systemd, through systemd-xdg-autostart-generator.
+X-GNOME-Autostart-enabled=true
+# Plasma only has a tray once the panel is up, and we need its watcher.
+X-KDE-autostart-after=panel
