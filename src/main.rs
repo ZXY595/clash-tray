@@ -39,7 +39,15 @@ async fn run() {
 
     let (commands, mut queue) = mpsc::unbounded();
     let state = Shared::new(Snapshot::fetch(&api).await);
-    let tray = match ClashTray::new(state.clone(), commands).spawn().await {
+    // Autostart runs us while the desktop is still coming up, so the tray host
+    // usually does not exist yet. Assume it will: rather than failing right
+    // away, this keeps the tray running and lets ksni register the item as soon
+    // as the StatusNotifierWatcher appears.
+    let tray = match ClashTray::new(state.clone(), commands)
+        .assume_sni_available(true)
+        .spawn()
+        .await
+    {
         Ok(tray) => tray,
         Err(error) => {
             eprintln!("clash-tray: {error}");

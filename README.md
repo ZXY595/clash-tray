@@ -46,3 +46,7 @@ install -Dm644 clash-tray.desktop ~/.config/autostart/clash-tray.desktop
 A packager can install the same file into `/etc/xdg/autostart/` for every user of the
 machine. A copy in `~/.config/autostart/` under the same name takes precedence over it, so
 users can still opt out or change how the tray is launched.
+
+Autostart can beat the desktop to it, so the tray does not give up when there is no tray host
+yet: it keeps running and the icon shows up as soon as the
+`org.kde.StatusNotifierWatcher` appears.

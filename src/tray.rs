@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use futures_channel::mpsc::UnboundedSender;
 use ksni::menu::{CheckmarkItem, MenuItem, RadioGroup, RadioItem, StandardItem, SubMenu};
-use ksni::{ToolTip, Tray};
+use ksni::{OfflineReason, ToolTip, Tray};
 
 use crate::api::{Command, Group, Mode, Rule, Snapshot};
 
@@ -205,6 +205,22 @@ impl Tray for ClashTray {
         drop(self.commands.unbounded_send(Command::Refresh));
     }
 
+    /// The desktop has no tray host at the moment, e.g. because autostart ran
+    /// before the session was ready to show one. Stay alive: ksni keeps
+    /// watching for the host and registers the item once it shows up.
+    fn watcher_offline(&self, reason: OfflineReason) -> bool {
+        eprintln!(
+            "clash-tray: waiting for a StatusNotifierWatcher: {}",
+            offline_reason(&reason)
+        );
+        true
+    }
+
+    /// A tray host appeared; ksni (re-)registers the item right after this.
+    fn watcher_online(&self) {
+        eprintln!("clash-tray: the StatusNotifierWatcher is online");
+    }
+
     fn tool_tip(&self) -> ToolTip {
         let state = self.state.snapshot();
         ToolTip {
@@ -238,6 +254,16 @@ impl Tray for ClashTray {
             }
             .into(),
         ]
+    }
+}
+
+/// Say why there is no tray host, since [`OfflineReason`] only implements
+/// `Debug`.
+fn offline_reason(reason: &OfflineReason) -> String {
+    match reason {
+        OfflineReason::No => "the tray host went away".to_owned(),
+        OfflineReason::Error(error) => error.to_string(),
+        _ => "the tray host is not available".to_owned(),
     }
 }
 
